@@ -1,0 +1,108 @@
+import { useState, useEffect } from 'react';
+import { ArrowRight, CheckCircle } from 'lucide-react';
+import { generateSituations, generateSituationDetails } from './groqClient';
+
+export default function ResultsPage({ formData, onBack }) {
+  const [loading, setLoading] = useState(true);
+  const [situations, setSituations] = useState([]);
+  const [selectedSituation, setSelectedSituation] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [details, setDetails] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchSituations = async () => {
+      try {
+        setLoading(true);
+        const results = await generateSituations(formData);
+        setSituations(results);
+      } catch (err) {
+        setError('حدث خطأ أثناء توليد الوضعيات. يرجى المحاولة مرة أخرى.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSituations();
+  }, [formData]);
+
+  const handleSelect = async (situation) => {
+    setSelectedSituation(situation);
+    try {
+      setDetailsLoading(true);
+      const resultDetails = await generateSituationDetails(formData, situation);
+      setDetails(resultDetails);
+    } catch (err) {
+      setError('حدث خطأ أثناء توليد التفاصيل.');
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  return (
+    <div className="results-page">
+      <button className="icon-btn" style={{ marginBottom: '20px' }} onClick={onBack}>
+        <ArrowRight size={20} />
+        عودة للنموذج
+      </button>
+
+      {error && <div style={{color: 'red', marginBottom: '20px', textAlign: 'center'}}>{error}</div>}
+
+      {loading ? (
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <h3>جاري صياغة الوضعيات المشكلة بذكاء...</h3>
+          <p>يرجى الانتظار قليلاً</p>
+        </div>
+      ) : (
+        <>
+          {!selectedSituation ? (
+            <>
+              <div className="form-header">
+                <h2>الوضعيات المقترحة</h2>
+                <p>اختر الوضعية التي تناسبك لاستكمال التفاصيل</p>
+              </div>
+
+              {situations.map((sit, index) => (
+                <div key={index} className="result-card">
+                  <div className="result-header">
+                    <h3 className="result-title">الخيار {index + 1}</h3>
+                    <button className="select-btn" onClick={() => handleSelect(sit)}>اختيار هذه الوضعية</button>
+                  </div>
+                  <div className="result-content">{sit}</div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="form-header">
+                <h2>تفاصيل الوضعية المختارة</h2>
+              </div>
+              
+              <div className="result-card" style={{borderColor: '#4caf50', background: '#f9fdf9'}}>
+                <div className="result-header">
+                  <h3 className="result-title" style={{color: '#388e3c', display: 'flex', alignItems: 'center', gap: '10px'}}>
+                    <CheckCircle size={24} />
+                    الوضعية المشكلة
+                  </h3>
+                </div>
+                <div className="result-content">{selectedSituation}</div>
+              </div>
+
+              {detailsLoading ? (
+                <div className="loading-container" style={{marginTop: '40px'}}>
+                  <div className="spinner"></div>
+                  <h3>جاري إعداد الحلول والشبكات وباقي التفاصيل...</h3>
+                </div>
+              ) : (
+                <div className="detail-section">
+                  <h3>التحليل والحلول</h3>
+                  <div className="detail-content">{details}</div>
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
