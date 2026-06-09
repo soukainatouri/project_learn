@@ -4,8 +4,16 @@ test('fill and submit the situation generation form', async ({ page }) => {
   // Navigate to the app
   await page.goto('/');
 
-  // Click the start button on the home page
-  await page.getByRole('button', { name: 'بدء الصياغة' }).click();
+  // Log in with credentials
+  await page.fill('input[type="email"]', 'loebalonso@gmail.com');
+  await page.fill('input[type="password"]', '12345678');
+  await page.getByRole('button', { name: 'دخول' }).click();
+
+  // Wait for the home page to load
+  await expect(page.getByRole('link', { name: 'بدء الصياغة' })).toBeVisible({ timeout: 10000 });
+
+  // Click the start link on the home page
+  await page.getByRole('link', { name: 'بدء الصياغة' }).click();
 
   // Fill text inputs
   await page.fill('input[name="lessonTitle"]', 'القسمة الإقليدية');
@@ -33,10 +41,6 @@ test('fill and submit the situation generation form', async ({ page }) => {
   // Select Checkboxes
   await page.getByText('معطيات زائدة', { exact: true }).click();
   await page.getByText('الدرهم', { exact: true }).click();
-  await page.getByText('مرتبطة بواقع المتعلم', { exact: true }).click();
-  await page.getByText('تسمح بتعبئة موارد متعددة', { exact: true }).click();
-  await page.getByText('فهم المطلوب', { exact: true }).click();
-  await page.getByText('تنظيم الحل', { exact: true }).click();
 
   // Submit form
   await page.getByRole('button', { name: 'إنشاء الوضعية المشكلة' }).click();

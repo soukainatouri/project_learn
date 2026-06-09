@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { generateSituations, generateSituationDetails } from './groqClient';
 
-export default function ResultsPage({ formData, onBack }) {
+export default function ResultsPage({ formData }) {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [situations, setSituations] = useState([]);
   const [selectedSituation, setSelectedSituation] = useState(null);
@@ -11,6 +13,11 @@ export default function ResultsPage({ formData, onBack }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // If user refreshes or navigates directly here without form data, send them back
+    if (!formData) {
+      navigate('/form');
+      return;
+    }
     const fetchSituations = async () => {
       try {
         setLoading(true);
@@ -23,7 +30,7 @@ export default function ResultsPage({ formData, onBack }) {
       }
     };
     fetchSituations();
-  }, [formData]);
+  }, [formData, navigate]);
 
   const handleSelect = async (situation) => {
     setSelectedSituation(situation);
@@ -40,7 +47,7 @@ export default function ResultsPage({ formData, onBack }) {
 
   return (
     <div className="results-page">
-      <button className="icon-btn" style={{ marginBottom: '20px' }} onClick={onBack}>
+      <button className="icon-btn back-btn" onClick={() => navigate('/form')}>
         <ArrowRight size={20} />
         عودة للنموذج
       </button>

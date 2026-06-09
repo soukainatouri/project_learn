@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-export default function FormPage({ onSubmit, onBack }) {
+export default function FormPage({ onSubmit }) {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     level: '',
     domain: '',
@@ -22,15 +24,13 @@ export default function FormPage({ onSubmit, onBack }) {
     requiredSkills: '',
     numericData: '',
     units: [],
-    qualityStandards: [],
-    successCriteria: [],
     length: '',
     language: ''
   });
 
   const handleCheckboxChange = (field, value) => {
     setFormData(prev => {
-      const array = prev[field];
+      const array = prev[field] || [];
       if (array.includes(value)) {
         return { ...prev, [field]: array.filter(item => item !== value) };
       } else {
@@ -55,9 +55,9 @@ export default function FormPage({ onSubmit, onBack }) {
 
   return (
     <div className="form-page">
-      <button className="icon-btn" style={{ marginBottom: '20px' }} onClick={onBack}>
+      <button className="icon-btn back-btn" onClick={() => navigate(-1)}>
         <ArrowRight size={20} />
-        عودة للرئيسية
+        عودة
       </button>
 
       <div className="form-header">
@@ -255,33 +255,6 @@ export default function FormPage({ onSubmit, onBack }) {
                 </label>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* Section 8 */}
-        <div className="form-section">
-          <h3 className="form-section-title">8. معايير جودة الوضعية</h3>
-          <div className="checkbox-group">
-            {['مرتبطة بواقع المتعلم', 'تشكل تحدياً معرفياً', 'تستدعي البحث والتفكير', 'تسمح بتعبئة موارد متعددة', 'لها أكثر من استراتيجية للحل', 'تحفز المناقشة والتبرير', 'تنمي النمذجة الرياضية', 'تنمي التواصل الرياضي'].map(std => (
-              <label key={std} className={`checkbox-label ${formData.qualityStandards.includes(std) ? 'selected' : ''}`}>
-                <input type="checkbox" checked={formData.qualityStandards.includes(std)} onChange={() => handleCheckboxChange('qualityStandards', std)} style={{display: 'none'}} />
-                <span>{std}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 9 */}
-        <div className="form-section">
-          <h3 className="form-section-title">9. التقويم</h3>
-          <label className="form-label">معايير النجاح</label>
-          <div className="checkbox-group">
-            {['فهم المطلوب', 'اختيار الاستراتيجية المناسبة', 'إنجاز العمليات بشكل صحيح', 'تنظيم الحل', 'تبرير الإجابة', 'التحقق من النتيجة'].map(crit => (
-              <label key={crit} className={`checkbox-label ${formData.successCriteria.includes(crit) ? 'selected' : ''}`}>
-                <input type="checkbox" checked={formData.successCriteria.includes(crit)} onChange={() => handleCheckboxChange('successCriteria', crit)} style={{display: 'none'}} />
-                <span>{crit}</span>
-              </label>
-            ))}
           </div>
         </div>
 
