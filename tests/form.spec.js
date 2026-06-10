@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('fill and submit the situation generation form', async ({ page }) => {
   // Navigate to the app
-  await page.goto('/');
+  await page.goto('https://soukainatouri.github.io/project_learn/');
 
   // Log in with credentials
   await page.fill('input[type="email"]', 'loebalonso@gmail.com');
