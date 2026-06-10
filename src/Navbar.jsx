@@ -16,8 +16,8 @@ export default function Navbar({ session }) {
       <div className="navbar-brand">
         الوضعية المشكلة في الرياضيات
       </div>
-      <div className="navbar-user" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-        <button onClick={() => navigate('/')} className="icon-btn" style={{ fontSize: '14px', padding: '6px 12px' }}>
+      <div className="navbar-user" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <button onClick={() => navigate('/')} className="nav-home-btn">
           <Home size={16} />
           الرئيسية
         </button>
