@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { ArrowRight, Wand2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateStoryScenes } from './groqClient';
@@ -12,41 +12,35 @@ export default function SimulationPage() {
   const [totalImages, setTotalImages] = useState(0);
   const [readyScenes, setReadyScenes] = useState([]);
   const [error, setError] = useState(null);
-  const seedRef = useRef(Math.floor(Math.random() * 10000));
 
-  const getImageUrl = (prompt) => {
-    const encodedPrompt = encodeURIComponent(prompt);
-    return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=600&nologo=true&seed=${seedRef.current}`;
-  };
+  // We are using the new router.huggingface.co endpoint which bypasses the ISP block!
+  const generateHFImage = async (prompt) => {
+    const apiKey = import.meta.env.VITE_HF_API_KEY;
+    if (!apiKey || apiKey === 'YOUR_HF_API_KEY_HERE') {
+      throw new Error('MISSING_API_KEY');
+    }
 
-  const delay = (ms) => new Promise(r => setTimeout(r, ms));
-
-  // Load a single image with retry logic for Pollinations rate limiting
-  const loadSingleImage = (url, retries = 3) => {
-    return new Promise((resolve) => {
-      const attempt = (attemptsLeft) => {
-        const img = new Image();
-        img.onload = () => {
-          // Check it's a real image, not an error JSON response
-          if (img.naturalWidth > 1) {
-            resolve(true);
-          } else if (attemptsLeft > 0) {
-            setTimeout(() => attempt(attemptsLeft - 1), 5000);
-          } else {
-            resolve(false);
-          }
-        };
-        img.onerror = () => {
-          if (attemptsLeft > 0) {
-            setTimeout(() => attempt(attemptsLeft - 1), 5000);
-          } else {
-            resolve(false);
-          }
-        };
-        img.src = url;
-      };
-      attempt(retries);
+    // Using the Hugging Face Router API (unblocked by Inwi!)
+    // Switching to FLUX.1-schnell since Stable Diffusion XL is deprecated on this router
+    const response = await fetch('https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+      }),
     });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Hugging Face Error:', errText);
+      throw new Error(`Failed to generate image. Status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
   };
 
   const handleGenerate = async () => {
@@ -57,7 +51,6 @@ export default function SimulationPage() {
     setReadyScenes([]);
     setImagesLoaded(0);
     setTotalImages(0);
-    seedRef.current = Math.floor(Math.random() * 10000);
     
     try {
       // Phase 1: Generate scene descriptions from Groq
@@ -70,24 +63,34 @@ export default function SimulationPage() {
         return;
       }
 
-      // Phase 2: Load images ONE BY ONE with retries
-      // Pollinations.ai only allows 1 request at a time per IP
+      // Phase 2: Generate images via Hugging Face Router
       setLoadingPhase('images');
       setTotalImages(generatedScenes.length);
 
-      const scenesWithUrls = generatedScenes.map(scene => ({
-        ...scene,
-        imageUrl: getImageUrl(scene.imagePrompt)
-      }));
-
-      // Sequential loading with delay between each image
-      for (let i = 0; i < scenesWithUrls.length; i++) {
-        if (i > 0) await delay(3000); // Wait 3s between images to let the server queue clear
-        await loadSingleImage(scenesWithUrls[i].imageUrl);
+      const loadedScenes = [];
+      // Sequential loading
+      for (let i = 0; i < generatedScenes.length; i++) {
+        const scene = generatedScenes[i];
+        try {
+          const blobUrl = await generateHFImage(scene.imagePrompt);
+          loadedScenes.push({ ...scene, imageUrl: blobUrl });
+        } catch (err) {
+          if (err.message === 'MISSING_API_KEY') {
+            setError('يرجى إضافة مفتاح Hugging Face في ملف .env.local لتوليد الصور.');
+            setIsLoading(false);
+            return;
+          }
+          console.error(`Failed to generate image for scene ${i+1}:`, err);
+          // Fallback to a placeholder if generation fails so the story isn't completely broken
+          loadedScenes.push({ 
+            ...scene, 
+            imageUrl: `https://placehold.co/800x600/e2e8f0/475569?text=Image+Generation+Failed+for+Scene+${i+1}` 
+          });
+        }
         setImagesLoaded(i + 1);
       }
 
-      setReadyScenes(scenesWithUrls);
+      setReadyScenes(loadedScenes);
     } catch (err) {
       console.error(err);
       setError('حدث خطأ أثناء الاتصال بالخادم. تأكد من إعدادات الشبكة.');
@@ -166,7 +169,7 @@ export default function SimulationPage() {
           )}
           {loadingPhase === 'images' && (
             <>
-              <p>جاري رسم الصور... ({imagesLoaded} / {totalImages})</p>
+              <p>جاري رسم الصور عبر Hugging Face... ({imagesLoaded} / {totalImages})</p>
               <div className="progress-bar-container">
                 <div 
                   className="progress-bar-fill" 
