@@ -104,6 +104,16 @@ export default function ResultsPage({ formData }) {
                 <div className="detail-section">
                   <h3>التحليل والحلول</h3>
                   <div className="detail-content">{details}</div>
+                  
+                  <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
+                    <button 
+                      className="submit-btn generate-sim-btn" 
+                      onClick={() => navigate('/simulation', { state: { initialSituation: selectedSituation } })}
+                      style={{ background: '#6366f1' }}
+                    >
+                      توليد قصة مصورة لهذه الوضعية
+                    </button>
+                  </div>
                 </div>
               )}
             </>

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ArrowRight, Wand2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { generateStoryScenes } from './groqClient';
 
 export default function SimulationPage() {
   const navigate = useNavigate();
-  const [situationText, setSituationText] = useState('');
+  const location = useLocation();
+  const [situationText, setSituationText] = useState(location.state?.initialSituation || '');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState('');
   const [imagesLoaded, setImagesLoaded] = useState(0);

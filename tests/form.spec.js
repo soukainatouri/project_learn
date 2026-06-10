@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test('fill and submit the situation generation form', async ({ page }) => {
-  // Navigate to the app
-  await page.goto('https://soukainatouri.github.io/project_learn/');
+  // Navigate to the local dev app
+  await page.goto('http://localhost:5173/');
 
   // Log in with credentials
   await page.fill('input[type="email"]', 'loebalonso@gmail.com');
@@ -17,14 +17,11 @@ test('fill and submit the situation generation form', async ({ page }) => {
 
   // Fill text inputs
   await page.fill('input[name="lessonTitle"]', 'القسمة الإقليدية');
-  await page.fill('input[name="targetLearnings"]', 'تعرف وتوظيف خوارزمية القسمة الإقليدية');
   await page.fill('input[name="educationalObjectives"]', 'أن يتمكن المتعلم من إنجاز عملية قسمة بتوظيف التقنية الاعتيادية');
   await page.fill('input[name="mathResources"]', 'جدول الضرب، الطرح، المقارنة');
   await page.fill('input[name="contextDescription"]', 'توزيع جوائز مسابقة على مجموعة من التلاميذ بالتساوي');
   await page.fill('input[name="taskRequired"]', 'حساب نصيب كل تلميذ والباقي');
-  await page.fill('input[name="finalProduct"]', 'عملية قسمة صحيحة مع تحديد الخارج والباقي');
   await page.fill('input[name="priorKnowledge"]', 'إتقان جدول الضرب');
-  await page.fill('input[name="requiredSkills"]', 'إنجاز الطرح والمقارنة بدقة');
   await page.fill('input[name="numericData"]', '458 جائزة على 12 تلميذاً');
 
   // Select Radios
@@ -32,7 +29,6 @@ test('fill and submit the situation generation form', async ({ page }) => {
   await page.getByText('الأعداد والحساب', { exact: true }).click();
   await page.getByText('بناء تعلم جديد', { exact: true }).click();
   await page.getByText('رحلة مدرسية', { exact: true }).click();
-  await page.getByText('وضعية بناء التعلم', { exact: true }).click();
   await page.getByText('متوسطة', { exact: true }).click();
   await page.getByText('ثنائي', { exact: true }).click();
   await page.getByText('متوسطة (6–10 أسطر)', { exact: true }).click();
