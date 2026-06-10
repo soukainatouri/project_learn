@@ -6,6 +6,7 @@ import FormPage from './FormPage';
 import ResultsPage from './ResultsPage';
 import AuthPage from './AuthPage';
 import Navbar from './Navbar';
+import SimulationPage from './SimulationPage';
 import './App.css';
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/form" element={<FormPage onSubmit={handleFormSubmit} />} />
           <Route path="/results" element={<ResultsPage formData={formData} />} />
+          <Route path="/simulation" element={<SimulationPage />} />
         </Routes>
       </div>
     </>

@@ -25,15 +25,15 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="action-card secondary-card disabled">
-          <div className="card-icon-wrapper">
+        <div className="action-card primary-card">
+          <div className="card-icon-wrapper" style={{ color: 'var(--wimbledon-lime)', background: 'var(--wimbledon-dark)' }}>
             <MonitorPlay size={50} />
           </div>
           <h2 className="card-title">محاكاة الوضعية</h2>
           <p className="card-desc">جرب وضعياتك وشاهد كيف يتفاعل التلاميذ معها خطوة بخطوة</p>
-          <button className="card-btn" disabled>
-            قريباً
-          </button>
+          <Link to="/simulation" className="card-link-btn">
+            بدء المحاكاة
+          </Link>
         </div>
       </div>
 
