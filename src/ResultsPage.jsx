@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateSituations, generateSituationDetails } from './groqClient';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 
 export default function ResultsPage({ formData }) {
   const navigate = useNavigate();
@@ -75,7 +80,14 @@ export default function ResultsPage({ formData }) {
                     <h3 className="result-title">الخيار {index + 1}</h3>
                     <button className="select-btn" onClick={() => handleSelect(sit)}>اختيار هذه الوضعية</button>
                   </div>
-                  <div className="result-content">{sit}</div>
+                  <div className="result-content">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkMath]} 
+                      rehypePlugins={[rehypeKatex]}
+                    >
+                      {sit}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ))}
             </>
@@ -92,7 +104,14 @@ export default function ResultsPage({ formData }) {
                     الوضعية المشكلة
                   </h3>
                 </div>
-                <div className="result-content">{selectedSituation}</div>
+                <div className="result-content">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm, remarkMath]} 
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {selectedSituation}
+                  </ReactMarkdown>
+                </div>
               </div>
 
               {detailsLoading ? (
@@ -103,7 +122,14 @@ export default function ResultsPage({ formData }) {
               ) : (
                 <div className="detail-section">
                   <h3>التحليل والحلول</h3>
-                  <div className="detail-content">{details}</div>
+                  <div className="detail-content">
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkMath]} 
+                      rehypePlugins={[rehypeKatex]}
+                    >
+                      {details}
+                    </ReactMarkdown>
+                  </div>
                   
                   <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
                     <button 

@@ -23,7 +23,16 @@ export default function AuthPage() {
         setMessage('تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني.');
       }
     } catch (error) {
-      setMessage(error.message || 'حدث خطأ أثناء المصادقة.');
+      let errorMsg = error.message || '';
+      if (errorMsg.includes('Invalid login credentials')) {
+        setMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      } else if (errorMsg.includes('User already registered')) {
+        setMessage('هذا البريد الإلكتروني مسجل بالفعل.');
+      } else if (errorMsg.includes('Password should be at least')) {
+        setMessage('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.');
+      } else {
+        setMessage('حدث خطأ أثناء المصادقة. الرجاء المحاولة مرة أخرى.');
+      }
     } finally {
       setLoading(false);
     }

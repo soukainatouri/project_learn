@@ -81,6 +81,11 @@ export default function SimulationPage() {
             setIsLoading(false);
             return;
           }
+          if (err.message.includes('402')) {
+             setError('لقد نفد رصيد حسابك المجاني في Hugging Face. يرجى ترقية الحساب أو استخدام مفتاح API جديد.');
+             setIsLoading(false);
+             return;
+          }
           console.error(`Failed to generate image for scene ${i+1}:`, err);
           // Fallback to a placeholder if generation fails so the story isn't completely broken
           loadedScenes.push({ 
