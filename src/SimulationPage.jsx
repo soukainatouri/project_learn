@@ -86,6 +86,11 @@ export default function SimulationPage() {
              setIsLoading(false);
              return;
           }
+          if (err.message.includes('403')) {
+             setError('مفتاح API الخاص بك لا يملك صلاحية توليد الصور. يرجى إنشاء مفتاح جديد بصلاحية "Make calls to the Serverless Inference API".');
+             setIsLoading(false);
+             return;
+          }
           console.error(`Failed to generate image for scene ${i+1}:`, err);
           // Fallback to a placeholder if generation fails so the story isn't completely broken
           loadedScenes.push({ 
