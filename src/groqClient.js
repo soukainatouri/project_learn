@@ -1,5 +1,7 @@
 import Groq from "groq-sdk";
 
+const MODEL_ID = "qwen/qwen3.8-27b";
+
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true 
@@ -74,7 +76,7 @@ export const generateSituations = async (formData) => {
           content: prompt,
         },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: MODEL_ID,
       temperature: 0.7,
       max_tokens: 2000,
     });
@@ -112,7 +114,7 @@ export const generateSituationDetails = async (formData, selectedSituation) => {
           content: prompt,
         },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: MODEL_ID,
       temperature: 0.7,
       max_tokens: 3000,
     });
@@ -155,7 +157,7 @@ export const generateStoryScenes = async (situationText) => {
           content: prompt,
         },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: MODEL_ID,
       temperature: 0.7,
       max_tokens: 2000,
       response_format: { type: "json_object" } 
