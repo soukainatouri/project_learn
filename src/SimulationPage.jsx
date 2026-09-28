@@ -21,9 +21,7 @@ export default function SimulationPage() {
       throw new Error('MISSING_API_KEY');
     }
 
-    // Using the Hugging Face Router API (unblocked by Inwi!)
-    // Switching to FLUX.1-schnell since Stable Diffusion XL is deprecated on this router
-    const response = await fetch('https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell', {
+    const response = await fetch('https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-3-medium-diffusers', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -37,7 +35,7 @@ export default function SimulationPage() {
     if (!response.ok) {
       const errText = await response.text();
       console.error('Hugging Face Error:', errText);
-      throw new Error(`Failed to generate image. Status: ${response.status}`);
+      throw new Error(`Hugging Face request failed (${response.status}): ${errText}`);
     }
 
     const blob = await response.blob();
